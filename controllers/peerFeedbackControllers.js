@@ -1,32 +1,29 @@
-const ParentsFeedback = require("../schema/parentsFeedback");
+const PeerFeedback = require("../schema/peerFeedback");
 const createCSVWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const csv = require("csv-parser");
 
 const { jsonFormater } = require("../helper/util");
 
-const parentsFeedbackHeader = [
+const PeerFeedbackHeader = [
   { id: "_id", title: "Key" },
-  { id: "studentName", title: "Student Name" },
-  { id: "parentName", title: "Parent Name" },
-  { id: "mobile", title: "Mobile" },
-  { id: "parentOccupation", title: "Parent Occupation" },
-  { id: "ParentsSuggestions", title: "Parents Suggestions" },
-  { id: "date", title: "Date" },
-  { id: "expectations", title: "Expectations" },
-  { id: "fulfill", title: "Fulfill" },
-  { id: "reasons", title: "Reasons" },
+  { id: "designation", title: "Designation" },
+  { id: "expert", title: "Expert" },
+  { id: "generalFeedback", title: "General Feedback" },
+  { id: "name", title: "Name" },
+  { id: "organizationName", title: "Organization Name" },
+  { id: "suggestions", title: "Suggestions" },
 ];
 
-const fileURL = "./download/parentsFeedback.csv";
+const fileURL = "./download/peerFeedback.csv";
 
 const csvWriter = createCSVWriter({
   path: fileURL,
-  header: parentsFeedbackHeader,
+  header: PeerFeedbackHeader,
 });
 
 module.exports.getData = (req, res) => {
-  ParentsFeedback.find({})
+  PeerFeedback.find({})
     .then((result) => {
       return res.status(201).json(result);
     })
@@ -38,7 +35,7 @@ module.exports.getData = (req, res) => {
 module.exports.postData = async (req, res) => {
   try {
     const data = req.body;
-    await ParentsFeedback.insertMany(data)
+    await PeerFeedback.insertMany(data)
       .then((result) => {
         return res.status(201).json({ msg: "success" });
       })
@@ -54,9 +51,9 @@ module.exports.deleteData = async (req, res) => {
   try {
     const data = req.body;
 
-    await ParentsFeedback.deleteOne(data)
+    await PeerFeedback.deleteOne(data)
       .then((result) => {
-        ParentsFeedback.find({})
+        PeerFeedback.find({})
           .then((output) => {
             return res.status(201).json(output);
           })
@@ -76,9 +73,9 @@ module.exports.updateOne = async (req, res) => {
   try {
     const data = req.body;
 
-    await ParentsFeedback.updateOne({ _id: data["_id"] }, data)
+    await PeerFeedback.updateOne({ _id: data["_id"] }, data)
       .then((result) => {
-        ParentsFeedback.find({})
+        PeerFeedback.find({})
           .then((output) => {
             return res.status(201).json(output);
           })
@@ -103,7 +100,7 @@ module.exports.downloadData = async (req, res) => {
     console.log("File not found!");
   }
 
-  await ParentsFeedback.find({})
+  await PeerFeedback.find({})
     .then((data) => {
       dataList.push(data);
     })
@@ -130,10 +127,10 @@ module.exports.uploadData = async (req, res) => {
     fs.createReadStream(fileURL)
       .pipe(csv())
       .on("data", async (row) => {
-        newData = jsonFormater(row, "parentsFeedback");
+        newData = jsonFormater(row, "peerFeedback");
         if (newData["_id"] === "") {
           delete newData["_id"];
-          await ParentsFeedback.insertMany(newData)
+          await PeerFeedback.insertMany(newData)
             .then((result) => {
               console.log("Inserted Data");
             })
@@ -141,7 +138,7 @@ module.exports.uploadData = async (req, res) => {
               return res.status(400).json({ error: err });
             });
         } else {
-          await ParentsFeedback.updateOne({ _id: newData["_id"] }, newData)
+          await PeerFeedback.updateOne({ _id: newData["_id"] }, newData)
             .then((data) => {
               console.log("Update Successful!");
             })
@@ -153,30 +150,6 @@ module.exports.uploadData = async (req, res) => {
       .on("end", () => {
         return res.status(201).json({ msg: "success" });
       });
-  } catch (err) {
-    return res.status(400).json({ error: err });
-  }
-};
-
-module.exports.getParentsFeedback = (req, res) => {
-  try {
-    const data = req.params.courseCode;
-
-    ParentsFeedback.find({}).then((result) => {
-      var expectations = [];
-      var fullfill = [];
-      var reasons = [];
-
-      result.forEach((element) => {
-        expectations.push(element["expectations"]);
-        fullfill.push(element["fulfill"]);
-        element["reasons"].forEach((elem) => {
-          reasons.push(elem);
-        });
-      });
-
-      return res.status(201).json([expectations, fullfill, reasons]);
-    });
   } catch (err) {
     return res.status(400).json({ error: err });
   }

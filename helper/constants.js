@@ -1,5 +1,3 @@
-const fileUrl = "/data/";
-
 const courseExitSurveyHeader = [
   { id: "_id", title: "Key" },
   { id: "courseCode", title: "Course Code" },
@@ -36,4 +34,22 @@ const parentsFeedbackHeader = [
   { id: "expectations", title: "Expectations" },
   { id: "fulfill", title: "Fulfill" },
   { id: "reasons", title: "Reasons" },
+];
+
+const employerFeedbackHeader = [
+  { id: "_id", title: "Key" },
+  { id: "organizationName", title: "Organization Name" },
+  { id: "organizationLocation", title: "Organization Location" },
+  { id: "feedbackProvider", title: "Feedback Provider" },
+  { id: "feedbackProviderDesignation", title: "Feedback Provider Designation" },
+  { id: "alumnusName", title: "Alumnus Name" },
+  { id: "natureOfalumnusRole", title: "Nature of Alumnus Role" },
+  { id: "alumnusRole", title: "Alumnus Role" },
+  { id: "qualityOfWork", title: "Quality of Work" },
+  { id: "individualAndTeamWork", title: "Individual and Teamwork" },
+  { id: "technicalKnowledge", title: "Technical Knowlodge" },
+  { id: "domainKnowledge", title: "Domain Knowledge" },
+  { id: "overallRating", title: "Overall Rating" },
+  { id: "suggestions", title: "Suggestions" },
+  { id: "digitalSignature", title: "Digital Signatures" },
 ];

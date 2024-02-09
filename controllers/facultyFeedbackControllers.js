@@ -1,32 +1,39 @@
-const ParentsFeedback = require("../schema/parentsFeedback");
+const FacultyFeedback = require("../schema/facultyFeedback");
 const createCSVWriter = require("csv-writer").createObjectCsvWriter;
 const fs = require("fs");
 const csv = require("csv-parser");
 
 const { jsonFormater } = require("../helper/util");
 
-const parentsFeedbackHeader = [
-  { id: "_id", title: "Key" },
-  { id: "studentName", title: "Student Name" },
-  { id: "parentName", title: "Parent Name" },
-  { id: "mobile", title: "Mobile" },
-  { id: "parentOccupation", title: "Parent Occupation" },
-  { id: "ParentsSuggestions", title: "Parents Suggestions" },
-  { id: "date", title: "Date" },
-  { id: "expectations", title: "Expectations" },
-  { id: "fulfill", title: "Fulfill" },
-  { id: "reasons", title: "Reasons" },
+const FacultyFeedbackHeader = [
+    { id: "_id", title: "Key" },
+    { id: "academicYear", title: "Academic Year" },
+    { id: "addContents", title: "Add Contents" },
+    { id: "assessmentMethods", title: "Assessment Methods" },
+    { id: "challengingTopics", title: "Challenging Topics" },
+    { id: "courseCode", title: "Course Code" },
+    { id: "courseName", title: "Course Name" },
+    { id: "courseOutcomesAppropriateness", title: "Course Outcomes Appropriateness" },
+    { id: "designThinkingContribution", title: "Design Thinking Contribution" },
+    { id: "industryAndSocietalNeeds", title: "Industry And Societal Needs" },
+    { id: "innovativeTeachingMethods", title: "Innovative Teaching Methods" },
+    { id: "removeContents", title: "Remove Contents" },
+    { id: "semester", title: "Semester" },
+    { id: "studentProficiencyInPrerequisites", title: "Student Proficiency In Prerequisites" },
+    { id: "suggestions", title: "Suggestions" },
+    { id: "timeForEffectiveCoverage", title: "Time For Effective Coverage" },
+    { id: "courseFacilitator", title: "Course Facilitator" },
 ];
 
-const fileURL = "./download/parentsFeedback.csv";
+const fileURL = "./download/facultyFeedback.csv";
 
 const csvWriter = createCSVWriter({
   path: fileURL,
-  header: parentsFeedbackHeader,
+  header: FacultyFeedbackHeader,
 });
 
 module.exports.getData = (req, res) => {
-  ParentsFeedback.find({})
+  FacultyFeedback.find({})
     .then((result) => {
       return res.status(201).json(result);
     })
@@ -38,7 +45,7 @@ module.exports.getData = (req, res) => {
 module.exports.postData = async (req, res) => {
   try {
     const data = req.body;
-    await ParentsFeedback.insertMany(data)
+    await FacultyFeedback.insertMany(data)
       .then((result) => {
         return res.status(201).json({ msg: "success" });
       })
@@ -54,9 +61,9 @@ module.exports.deleteData = async (req, res) => {
   try {
     const data = req.body;
 
-    await ParentsFeedback.deleteOne(data)
+    await FacultyFeedback.deleteOne(data)
       .then((result) => {
-        ParentsFeedback.find({})
+        FacultyFeedback.find({})
           .then((output) => {
             return res.status(201).json(output);
           })
@@ -76,9 +83,9 @@ module.exports.updateOne = async (req, res) => {
   try {
     const data = req.body;
 
-    await ParentsFeedback.updateOne({ _id: data["_id"] }, data)
+    await FacultyFeedback.updateOne({ _id: data["_id"] }, data)
       .then((result) => {
-        ParentsFeedback.find({})
+        FacultyFeedback.find({})
           .then((output) => {
             return res.status(201).json(output);
           })
@@ -103,7 +110,7 @@ module.exports.downloadData = async (req, res) => {
     console.log("File not found!");
   }
 
-  await ParentsFeedback.find({})
+  await FacultyFeedback.find({})
     .then((data) => {
       dataList.push(data);
     })
@@ -130,10 +137,10 @@ module.exports.uploadData = async (req, res) => {
     fs.createReadStream(fileURL)
       .pipe(csv())
       .on("data", async (row) => {
-        newData = jsonFormater(row, "parentsFeedback");
+        newData = jsonFormater(row, "facultyFeedback");
         if (newData["_id"] === "") {
           delete newData["_id"];
-          await ParentsFeedback.insertMany(newData)
+          await FacultyFeedback.insertMany(newData)
             .then((result) => {
               console.log("Inserted Data");
             })
@@ -141,7 +148,7 @@ module.exports.uploadData = async (req, res) => {
               return res.status(400).json({ error: err });
             });
         } else {
-          await ParentsFeedback.updateOne({ _id: newData["_id"] }, newData)
+          await FacultyFeedback.updateOne({ _id: newData["_id"] }, newData)
             .then((data) => {
               console.log("Update Successful!");
             })
@@ -153,30 +160,6 @@ module.exports.uploadData = async (req, res) => {
       .on("end", () => {
         return res.status(201).json({ msg: "success" });
       });
-  } catch (err) {
-    return res.status(400).json({ error: err });
-  }
-};
-
-module.exports.getParentsFeedback = (req, res) => {
-  try {
-    const data = req.params.courseCode;
-
-    ParentsFeedback.find({}).then((result) => {
-      var expectations = [];
-      var fullfill = [];
-      var reasons = [];
-
-      result.forEach((element) => {
-        expectations.push(element["expectations"]);
-        fullfill.push(element["fulfill"]);
-        element["reasons"].forEach((elem) => {
-          reasons.push(elem);
-        });
-      });
-
-      return res.status(201).json([expectations, fullfill, reasons]);
-    });
   } catch (err) {
     return res.status(400).json({ error: err });
   }
