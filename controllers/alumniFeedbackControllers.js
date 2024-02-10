@@ -169,6 +169,7 @@ module.exports.uploadData = async (req, res) => {
           await AlumniFeedback.insertMany(newData)
             .then((result) => {
               console.log("Inserted Data");
+              return res.status(201).json({msg: "Inserted Data!"});
             })
             .catch((err) => {
               return res.status(400).json({ error: err });
@@ -177,6 +178,7 @@ module.exports.uploadData = async (req, res) => {
           await AlumniFeedback.updateOne({ _id: newData["_id"] }, newData)
             .then((data) => {
               console.log("Update Successful!");
+              return res.status(201).json({msg: "Updated Data!"});
             })
             .catch((err) => {
               return res.status(400).json({ error: err });
